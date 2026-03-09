@@ -1,0 +1,304 @@
+<!-- ===================== index.html ===================== -->
+<!DOCTYPE html>
+<html style="background-color: blanchedalmond;" lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Management Tracking Portal</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<!-- ROLE SELECT -->
+<div id="roleSection" class="card">
+  <h1>Secure Academic Progress Tracking Dashboard</h1>
+  <button onclick="showAdminLogin()">Admin Panel</button>
+  <button onclick="showTeacherLogin()">Teacher Panel</button>
+  <button onclick="showStudentLogin()">Student Panel</button>
+</div>
+
+<!-- ADMIN LOGIN -->
+<div id="loginSection" class="card" style="display:none;">
+  <button class="backBtn" onclick="backToHome()">⬅ Back</button>
+  <h1>Admin Login</h1>
+  <input type="text" id="username" placeholder="Username">
+  <input type="password" id="password" placeholder="Password"><br>
+  <button onclick="login()">Login</button>
+  <p id="loginMsg" class="error"></p>
+</div>
+
+<!-- TEACHER LOGIN -->
+<div id="teacherLogin" class="card" style="display:none;">
+  <button class="backBtn" onclick="backToHome()">⬅ Back</button>
+  <h1>Teacher Login</h1>
+  <input type="password" id="teacherPass" placeholder="Password"><br>
+  <button onclick="teacherLoginFunc()">Login</button>
+  <p id="teacherMsg" class="error"></p>
+</div>
+
+<!-- STUDENT LOGIN -->
+<div id="studentLogin" class="card" style="display:none;">
+  <button class="backBtn" onclick="backToHome()">⬅ Back</button>
+  <h1>Student Login</h1>
+  <input type="text" id="studentName" placeholder="Enter Student Name">
+  <input type="password" id="studentPass" placeholder="Password"><br>
+  <button onclick="studentLoginFunc()">Login</button>
+  <p id="studentMsg" class="error"></p>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" style="display:none;">
+  <div style="text-align:left;margin:10px;">
+    <button class="backBtn" onclick="backToHome()">⬅ Back</button>
+  </div>
+  <h2 style="text-align:center;">Admin Dashboard</h2>
+
+  <div class="card">
+    <h3>Add Book for Distribution</h3>
+    <input type="text" id="newBook" placeholder="Enter book name">
+    <button onclick="addBook()">Add Book</button>
+    <p id="bookMsg" class="success"></p>
+  </div>
+
+  <table id="studentTable">
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Total Fees</th>
+        <th>Paid</th>
+        <th>Due</th>
+        <th>Update Paid</th>
+        <th>Eligibility</th>
+        <th>Books Distribution</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- TEACHER OPTIONS -->
+<div id="teacherOptions" class="card" style="display:none;">
+  <button class="backBtn" onclick="backToHome()">⬅ Back</button>
+  <h1>Teacher Panel</h1>
+  <button onclick="openAttendance()">Check Attendance</button>
+  <button onclick="openFees()">Check Fees</button>
+</div>
+
+<!-- ATTENDANCE PANEL -->
+<div id="attendancePanel" style="display:none;">
+  <div style="text-align:left;margin:10px;">
+    <button class="backBtn" onclick="backToTeacher()">⬅ Back</button>
+  </div>
+  <h2 style="text-align:center;">Attendance</h2>
+  <table id="attendanceTable">
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Status</th>
+        <th>Mark</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- FEES PANEL -->
+<div id="feesPanel" style="display:none;">
+  <div style="text-align:left;margin:10px;">
+    <button class="backBtn" onclick="backToTeacher()">⬅ Back</button>
+  </div>
+  <h2 style="text-align:center;">Fees Status</h2>
+  <table id="feesTable">
+    <thead>
+      <tr>
+        <th>Student</th>
+        <th>Paid</th>
+        <th>Due</th>
+        <th>Books Received</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
+
+<!-- STUDENT PANEL -->
+<div id="studentPanel" style="display:none;">
+  <div style="text-align:left;margin:10px;">
+    <button class="backBtn" onclick="backToHome()">⬅ Back</button>
+  </div>
+  <h2 style="text-align:center;">Student Dashboard</h2>
+  <table id="studentViewTable">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Paid</th>
+        <th>Due</th>
+        <th>Attendance</th>
+        <th>Books</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <div style="text-align:center;margin-top:10px;">
+    <button onclick="downloadStudentReceipt()">Download Receipt</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
+
+
+<!-- ===================== styles.css ===================== -->
+<style>
+body{font-family:Arial;background:#f4f6f9;text-align:center}
+.card{background:white;padding:20px;margin:20px auto;width:320px;border-radius:12px;box-shadow:0 0 10px rgba(0,0,0,0.1)}
+button{padding:8px 14px;margin:6px;border:none;border-radius:6px;background:#007bff;color:white;cursor:pointer}
+button:hover{background:#0056b3}
+.backBtn{background:#555}
+.error{color:red}
+.success{color:green}
+table{width:95%;margin:20px auto;border-collapse:collapse;background:white}
+th,td{border:1px solid #ccc;padding:8px}
+th{background:#007bff;color:white}
+</style>
+
+
+<!-- ===================== script.js ===================== -->
+<script>
+const TOTAL_FEES = 10000;
+const ADMIN_USER = "admin";
+const ADMIN_PASS = "1234";
+const TEACHER_PASS = "1234";
+const STUDENT_PASS = "1234";
+
+let currentStudentIndex = -1;
+let books = ["English","Java","DSA"];
+
+let students = [
+  {name:"Student 1", paid:0, received:[], present:false},
+  {name:"Student 2", paid:0, received:[], present:false},
+  {name:"Student 3", paid:0, received:[], present:false}
+];
+
+function hideAll(){
+  ["roleSection","loginSection","teacherLogin","studentLogin","adminPanel","teacherOptions","attendancePanel","feesPanel","studentPanel"].forEach(id=>{
+    document.getElementById(id).style.display="none";
+  });
+}
+
+function backToHome(){ hideAll(); roleSection.style.display="block"; }
+function backToTeacher(){ hideAll(); teacherOptions.style.display="block"; }
+
+function showAdminLogin(){ hideAll(); loginSection.style.display="block"; }
+function showTeacherLogin(){ hideAll(); teacherLogin.style.display="block"; }
+function showStudentLogin(){ hideAll(); studentLogin.style.display="block"; }
+
+function login(){
+  if(username.value===ADMIN_USER && password.value===ADMIN_PASS){
+    hideAll(); adminPanel.style.display="block"; renderAdminTable();
+  }else loginMsg.textContent="Invalid admin credentials";
+}
+
+function teacherLoginFunc(){
+  if(teacherPass.value===TEACHER_PASS){ hideAll(); teacherOptions.style.display="block"; }
+  else teacherMsg.textContent="Wrong password";
+}
+
+function studentLoginFunc(){
+  const index = students.findIndex(s=>s.name.toLowerCase()===studentName.value.toLowerCase());
+  if(index!==-1 && studentPass.value===STUDENT_PASS){
+    currentStudentIndex=index;
+    hideAll(); studentPanel.style.display="block"; renderStudentView();
+  }else studentMsg.textContent="Invalid student login";
+}
+
+function addBook(){
+  if(newBook.value.trim()==="") return;
+  books.push(newBook.value);
+  bookMsg.textContent="Book added";
+  newBook.value="";
+  renderAdminTable();
+}
+
+function renderAdminTable(){
+  const tbody=document.querySelector("#studentTable tbody");
+  tbody.innerHTML="";
+  students.forEach((s,i)=>{
+    const due=TOTAL_FEES-s.paid;
+    const eligible=due===0?"Eligible":"Not Eligible";
+    const row=`<tr>
+      <td>${s.name}</td>
+      <td>${TOTAL_FEES}</td>
+      <td>${s.paid}</td>
+      <td>${due}</td>
+      <td><input type='number' id='pay${i}' style='width:70px'><button onclick='updateFees(${i})'>Add</button></td>
+      <td>${eligible}</td>
+      <td>${books.map(b=>`<button onclick="giveBook(${i},'${b}')">${b}</button>`).join(" ")}</td>
+    </tr>`;
+    tbody.innerHTML+=row;
+  });
+}
+
+function updateFees(i){
+  const amt=parseInt(document.getElementById("pay"+i).value)||0;
+  students[i].paid+=amt;
+  renderAdminTable();
+}
+
+function giveBook(i,book){
+  if(!students[i].received.includes(book)) students[i].received.push(book);
+  renderAdminTable();
+}
+
+function openAttendance(){ hideAll(); attendancePanel.style.display="block"; renderAttendance(); }
+function openFees(){ hideAll(); feesPanel.style.display="block"; renderFees(); }
+
+function renderAttendance(){
+  const tbody=document.querySelector("#attendanceTable tbody");
+  tbody.innerHTML="";
+  students.forEach((s,i)=>{
+    tbody.innerHTML+=`<tr>
+      <td>${s.name}</td>
+      <td>${s.present?"Present":"Absent"}</td>
+      <td><button onclick='markAttendance(${i})'>Toggle</button></td>
+    </tr>`;
+  });
+}
+
+function markAttendance(i){ students[i].present=!students[i].present; renderAttendance(); }
+
+function renderFees(){
+  const tbody=document.querySelector("#feesTable tbody");
+  tbody.innerHTML="";
+  students.forEach(s=>{
+    tbody.innerHTML+=`<tr>
+      <td>${s.name}</td>
+      <td>${s.paid}</td>
+      <td>${TOTAL_FEES-s.paid}</td>
+      <td>${s.received.join(", ")}</td>
+    </tr>`;
+  });
+}
+
+function renderStudentView(){
+  const s=students[currentStudentIndex];
+  document.querySelector("#studentViewTable tbody").innerHTML=`<tr>
+    <td>${s.name}</td>
+    <td>${s.paid}</td>
+    <td>${TOTAL_FEES-s.paid}</td>
+    <td>${s.present?"Present":"Absent"}</td>
+    <td>${s.received.join(", ")}</td>
+  </tr>`;
+}
+
+function downloadStudentReceipt(){
+  const s=students[currentStudentIndex];
+  const text=`Receipt\nName: ${s.name}\nPaid: ${s.paid}\nDue: ${TOTAL_FEES-s.paid}`;
+  const blob=new Blob([text]);
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);
+  a.download="receipt.txt";
+  a.click();
+}
+</script>
